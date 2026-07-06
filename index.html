@@ -1,0 +1,453 @@
+<title>Booster Lab — Molecole per potenziare le fragranze · Fraterworks & Ateneo dell'Olfatto</title>
+<style>
+  :root{
+    --paper:#FBFAF8; --ink:#1C1815; --ink-soft:#4A443C;
+    --neutral:#8A8578; --hair:#E4E0D6; --panel:#F4F1EA; --panel2:#EFEBE1;
+    --testa:#C8912B; --cuore:#9E3B4E; --fondo:#6B4A2B;
+    --go:#3E6B4F;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --maxw:1200px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3{font-family:var(--serif);text-wrap:balance;font-weight:600;line-height:1.14;margin:0}
+  a{color:inherit}
+
+  header.hero{border-bottom:2px solid var(--ink);padding:40px 0 26px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--neutral)}
+  header.hero h1{font-size:clamp(28px,4.4vw,46px);margin:12px 0 10px}
+  header.hero p.lede{font-size:17px;color:var(--ink-soft);max-width:64ch;margin:0}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px;font-family:var(--mono);font-size:12px;color:var(--neutral)}
+  .stats b{color:var(--ink);font-size:19px;font-family:var(--serif)}
+  .stats div{display:flex;flex-direction:column}
+
+  /* toolbar */
+  .toolbar{position:sticky;top:0;z-index:20;background:rgba(251,250,248,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--hair)}
+  .toolbar .wrap{padding-top:12px;padding-bottom:12px;display:flex;flex-direction:column;gap:10px}
+  .searchrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #q{flex:1;min-width:200px;font-family:var(--sans);font-size:15px;padding:10px 14px;border:1px solid var(--hair);border-radius:9px;background:#fff}
+  #q:focus{outline:2px solid var(--fondo);outline-offset:1px;border-color:transparent}
+  select.sort{font-family:var(--mono);font-size:12px;padding:9px 10px;border:1px solid var(--hair);border-radius:9px;background:#fff}
+  .count{font-family:var(--mono);font-size:12px;color:var(--neutral);white-space:nowrap}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;padding:5px 11px;border-radius:999px;border:1px solid var(--hair);background:#fff;cursor:pointer;user-select:none;transition:.12s}
+  .chip:hover{border-color:var(--neutral)}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .chip.grp-testa[aria-pressed="true"]{background:var(--testa);border-color:var(--testa)}
+  .chip.grp-cuore[aria-pressed="true"]{background:var(--cuore);border-color:var(--cuore)}
+  .chip.grp-fondo[aria-pressed="true"]{background:var(--fondo);border-color:var(--fondo)}
+  .chip.grp-boost[aria-pressed="true"]{background:var(--go);border-color:var(--go)}
+  .lblrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .lblrow .cap{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--neutral);margin-right:2px}
+
+  main{padding:26px 0 60px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+  .card{border:1px solid var(--hair);border-radius:12px;background:#fff;padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px}
+  .card.boost{border-color:#CFE0D4;box-shadow:0 0 0 1px #E5EFE8 inset}
+  .c-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .c-head h3{font-size:19px}
+  .chem{font-family:var(--mono);font-size:11.5px;color:var(--neutral);margin-top:3px;display:block}
+  .tier-tag{font-family:var(--mono);font-size:10px;letter-spacing:.04em;padding:3px 8px;border-radius:999px;color:#fff;white-space:nowrap}
+  .t-testa{background:var(--testa)} .t-cuore{background:var(--cuore)} .t-fondo{background:var(--fondo)}
+  .metaline{display:flex;gap:6px;flex-wrap:wrap}
+  .tag{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:5px;background:var(--panel);border:1px solid var(--hair);color:var(--ink-soft)}
+  .tag.site{background:var(--panel2)}
+  .tag.fn{background:#EAF1EC;border-color:#D3E4D8;color:#2C5540}
+
+  .use{font-size:13.5px;background:#F1F6F2;border-left:3px solid var(--go);padding:8px 11px;border-radius:0 7px 7px 0}
+  .use b{color:#2C5540}
+  .desc{font-size:13.5px;color:var(--ink-soft)}
+
+  .dose{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:8px;overflow:hidden;font-family:var(--mono)}
+  .dose div{background:#fff;padding:7px 8px;text-align:center}
+  .dose .dk{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--neutral)}
+  .dose .dv{font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
+  .dose .mid{background:var(--panel)}
+  .dnote{font-family:var(--mono);font-size:10.5px;color:var(--neutral);margin-top:-4px}
+
+  .intens{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:10.5px}
+  .intens .m{display:flex;align-items:center;gap:6px}
+  .intens .mk{color:var(--neutral);text-transform:uppercase;letter-spacing:.06em}
+  .track{width:52px;height:5px;background:var(--hair);border-radius:3px;overflow:hidden}
+  .fill{height:100%;background:var(--ink)}
+
+  details{border-top:1px dotted var(--hair);padding-top:8px}
+  details summary{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--neutral);cursor:pointer;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"+ ";color:var(--fondo)}
+  details[open] summary::before{content:"– "}
+  details .body{font-size:13px;color:var(--ink-soft);padding-top:8px;display:flex;flex-direction:column;gap:8px}
+  details .body b{color:var(--ink);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:1px}
+
+  .empty{text-align:center;color:var(--neutral);font-family:var(--mono);font-size:13px;padding:60px 0}
+  footer{border-top:2px solid var(--ink);padding:24px 0 50px;font-size:12.5px;color:var(--neutral)}
+  :focus-visible{outline:2px solid var(--cuore);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Strumento di formulazione · Materie prime reali dei due cataloghi</div>
+  <h1>Booster Lab</h1>
+  <p class="lede">Quali molecole usare per <b>potenziare</b> una fragranza — radiance, volume, scia, fissazione — e a <b>quali dosaggi</b>. Ogni scheda è ancorata al catalogo reale di <b>Fraterworks</b> e <b>Ateneo dell'Olfatto</b>.</p>
+  <div class="stats">
+    <div><b id="s-tot">0</b><span>materie in archivio</span></div>
+    <div><b id="s-boost">0</b><span>potenzianti</span></div>
+    <div><b id="s-shown">0</b><span>visibili col filtro</span></div>
+  </div>
+</div></header>
+
+<div class="toolbar"><div class="wrap">
+  <div class="searchrow">
+    <input id="q" type="search" placeholder="Cerca per nome, molecola, effetto, famiglia… (es. muschio, ambrato, radiance)" autocomplete="off">
+    <select class="sort" id="sort">
+      <option value="az">Ordina: A→Z</option>
+      <option value="pot">Potenza ↓</option>
+      <option value="pers">Persistenza ↓</option>
+      <option value="diff">Diffusione ↓</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="lblrow">
+    <span class="cap">Fascia</span>
+    <div class="chips" id="tierChips">
+      <button class="chip grp-testa" data-f="tier" data-v="testa" aria-pressed="false">Testa</button>
+      <button class="chip grp-cuore" data-f="tier" data-v="cuore" aria-pressed="false">Cuore</button>
+      <button class="chip grp-fondo" data-f="tier" data-v="fondo" aria-pressed="false">Fondo</button>
+    </div>
+    <span class="cap" style="margin-left:8px">Funzione</span>
+    <div class="chips" id="fnChips"></div>
+    <button class="chip grp-boost" id="boostOnly" aria-pressed="false" style="margin-left:8px">★ Solo potenzianti</button>
+  </div>
+</div></div>
+
+<main><div class="wrap">
+  <div class="cards" id="cards"></div>
+  <div class="empty" id="empty" hidden>Nessuna materia corrisponde ai filtri.</div>
+</div></main>
+
+<footer><div class="wrap">
+  Fonte esclusiva: cataloghi pubblici di <b>fraterworks.com</b> e <b>ateneodellolfatto.com</b>. Dosaggi espressi come % sul concentrato (jus), indicativi per fragranza fine — vanno sempre verificati con le schede di sicurezza del fornitore e i limiti IFRA vigenti. Archivio in costruzione: nuovi lotti in arrivo.
+</div></footer>
+
+<script>
+// ===== ARCHIVIO MATERIE PRIME =====
+// tier: testa|cuore|fondo · fn: tag funzione · boost: potenziante
+// d: [min, tipico, max] in % sul concentrato · p/di/pe/v: potenza/diffusione/persistenza/volatilità 1-10
+const M = [
+{n:"Iso E Super",chem:"(octahydro-tetramethyl acetonaphthone) · Iso E Super™",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",altTier:"cuore-fondo",fam:["Legnosa","Ambrata","Muschiata"],fn:["radiance","volume","trasparenza","booster","smoothing"],boost:true,
+ use:"Il potenziatore universale: allarga il volume e dà <b>radiance</b> vellutata senza cambiare il tema. Overdose per l'effetto \"aria attorno alla pelle\".",
+ desc:"Legnoso-ambrato asciutto, velluto trasparente, quasi cedro-pastello con un alone muschiato. Bassa definizione olfattiva (molti lo percepiscono poco) ma enorme lavoro strutturale: leviga gli spigoli e crea profondità.",
+ d:["3%","10–25%","50%+"],dnote:"tollera overdose altissime senza saturare",p:4,di:6,pe:8,v:4,
+ compat:"Cashmeran, Hedione, Ambroxan, vetiver, cedro, Ionone, muschi bianchi — fa da collante tra tutto.",
+ caut:"Sopra il 40–50% appiattisce e 'sbianca' le note fini; anosmia parziale comune (rischio di sovradosare senza accorgersene).",
+ psy:"Pulizia setosa, eleganza sussurrata, moderno.",
+ ex:"Molecule 01 (Escentric), Terre d'Hermès, Fierce, Encre Noire, Feminité du Bois.",
+ tech:"Molto stabile, buona tenuta in alcool e in sapone. Materia più usata al mondo. Su Fraterworks disponibile anche in versioni ad alto tenore isomerico (più radiante)."},
+
+{n:"Hedione",chem:"metil diidrogiasmonato · methyl dihydrojasmonate",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"cuore",altTier:"testa-cuore",fam:["Floreale","Agrumata","Verde"],fn:["diffusione","lift","trasparenza","booster","blooming"],boost:true,
+ use:"Dà <b>lift</b> e diffusione trasparente: 'apre' il bouquet e fa fiorire gli agrumi e i fiori bianchi. Il ponte testa→cuore per eccellenza.",
+ desc:"Gelsomino acquoso e magnolia ariosa, sfumatura di pcompelmo verde e petalo bagnato. Luminosità fredda, quasi sensazione di 'spazio'. Da solo è tenue: lavora amplificando ciò che gli sta intorno.",
+ d:["2%","10–30%","50%"],dnote:"celebre l'overdose ~18% in Eau Sauvage",p:3,di:7,pe:4,v:6,
+ compat:"Bergamotto, gelsomino, rosa, muschi bianchi, Iso E Super — bloom su tutti i floreali.",
+ caut:"Poco fissante e volatile: da sola svanisce; non aspettarti persistenza. Alte dosi possono rendere 'acquoso/piatto' se manca struttura di fondo.",
+ psy:"Freschezza luminosa, trasparenza, eleganza pulita.",
+ ex:"Eau Sauvage, CK One, Odeur 53, innumerevoli floreali moderni.",
+ tech:"Esiste in versione ad alto cis (Hedione HC) più potente e diffusiva. Stabile, ottima in alcool."},
+
+{n:"Ambroxan",chem:"ambrox / ambroxide · (dodecahydro-tetramethyl naphthofuran)",cat:"Sintetico",orig:"Sintetica (bio da sclareolo)",site:"AO+FW",tier:"fondo",fam:["Ambrata","Legnosa","Muschiata","Marina"],fn:["radiance","fissativo","skin","booster","volume"],boost:true,
+ use:"Booster ambrato-minerale ad altissima resa: dà <b>scia, effetto pelle e radiance</b> salina. Poche gocce moltiplicano la proiezione.",
+ desc:"Ambra secca, salmastro-minerale, legno caldo e alone muschiato-pelle. Sensazione asciutta e 'luminosa dall'interno', temperatura tiepida. Effetto seconda-pelle magnetico.",
+ d:["0,5%","2–8%","15%"],dnote:"potentissimo: partire basso",p:8,di:7,pe:9,v:4,
+ compat:"Iso E Super, vetiver, cisto/labdano, agrumi, rosa, muschi — amplifica quasi tutto.",
+ caut:"Sopra il 10% diventa dominante e 'sintetico-salato', schiaccia le note delicate; effetto anosmia possibile.",
+ psy:"Sensualità pulita, magnetismo, pelle nuda, lusso minerale.",
+ ex:"Not a Perfume (Juliette has a Gun), Aventus, Sauvage, Ambroxan-bombs moderne.",
+ tech:"Cristalli da sciogliere (spesso 10% in IPM/DPG). Su Fraterworks come Cetalox®/Ambrox; molto stabile, ottimo fissativo di supporto."},
+
+{n:"Ambrocenide",chem:"miscela ambrata policiclica · Ambrocenide® 10% DPG",cat:"Sintetico",orig:"Sintetica",site:"AO",tier:"fondo",fam:["Ambrata","Legnosa"],fn:["radiance","booster","volume","fissativo"],boost:true,
+ use:"Amplificatore ambrato-woody estremo: aggiunge <b>calore radiante e 'firma' woody-amber</b> moderna. Bastano tracce.",
+ desc:"Ambra secca cristallina, woody caldo con sfaccettatura dolce-legnosa quasi 'da profumo maschile contemporaneo'. Enorme aura, spinge la formula in avanti.",
+ d:["0,05%","0,2–1%","2%"],dnote:"iper-potente, dosare in ppm",p:10,di:8,pe:9,v:3,
+ compat:"Ambroxan, Iso E Super, oud sintetico, vaniglia, spezie — cuore dei woody-amber.",
+ caut:"Facilissimo esagerare: sopra soglia diventa aspro, 'raschiante', e copre tutto. Usare la versione diluita.",
+ psy:"Potenza, presenza maschile, modernità aggressiva.",
+ ex:"Woody-amber contemporanei stile Baccarat Rouge / Aventus-boosted.",
+ tech:"Venduto già diluito (10% DPG) proprio per la potenza. Ottima tenuta."},
+
+{n:"Cashmeran",chem:"DPMI · Cashmeran® (Musk Indanone)",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",altTier:"cuore-fondo",fam:["Muschiata","Legnosa","Ambrata","Speziata"],fn:["volume","cremoso","booster","smoothing","fissativo"],boost:true,
+ use:"Dà <b>rotondità cremosa e volume 'cashmere'</b>: ammorbidisce e riscalda, ottimo per arrotondare woody e musk.",
+ desc:"Muschiato-legnoso caldo con pizzico speziato-pino e sfumatura fruttata-viola; effetto 'coperta' vellutata, asciutta e tattile. Molto riconoscibile, tra il minerale e il cremoso.",
+ d:["0,5%","2–8%","15%"],dnote:"sopra 8% domina il carattere",p:7,di:6,pe:8,v:4,
+ compat:"Iso E Super, muschi bianchi, rosa, patchouli, ambra, vaniglia.",
+ caut:"Personalità forte: alte dosi 'cashmeranizzano' tutto appiattendo le differenze.",
+ psy:"Comfort, morbidezza, calore avvolgente, moderno-coccola.",
+ ex:"La Nuit de l'Homme (faccetta), molti musky-woody, cosmetici di lusso.",
+ tech:"Semisolido, molto stabile e persistente; buon fissativo secondario."},
+
+{n:"Galaxolide 50 IPM",chem:"HHCB · Galaxolide® (muschio policiclico)",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Muschiata"],fn:["fissativo","volume","booster","smoothing"],boost:true,
+ use:"Muschio bianco pulito da <b>volume e fissaggio</b>: gonfia la base e dà quel 'clean' da bucato di lusso. Grande resa a basso costo.",
+ desc:"Muschio bianco-dolce, leggermente fruttato-legnoso, pulito e cotonoso. Sensazione morbida, calda, avvolgente. Base per accordi 'skin/clean'.",
+ d:["2%","8–20%","40%"],dnote:"venduto al 50% in IPM: dosi generose ok",p:5,di:5,pe:8,v:3,
+ compat:"Tutti i floreali, Iso E Super, Hedione, ambra, frutti — collante morbido.",
+ caut:"Questioni ambientali/regolatorie (persistenza) da valutare per uso commerciale; alte dosi 'saponificano'.",
+ psy:"Pulizia, comfort, morbidezza, intimità.",
+ ex:"Innumerevoli — musk moderno, functional perfumery, fine fragrance clean.",
+ tech:"Fissativo di volume economico. Molto stabile."},
+
+{n:"Habanolide",chem:"pentadecenolide (macrociclico) · Habanolide®",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Muschiata"],fn:["fissativo","radiance","booster","smoothing"],boost:true,
+ use:"Muschio macrociclico 'metallico-radiante': dà <b>scia pulita e fissaggio moderno</b>, più diffusivo e meno dolce di Galaxolide.",
+ desc:"Muschio bianco leggermente metallico-cerato, freddo-luminoso, sfumatura di ferro-da-stiro e petalo. Elegante, trasparente, allunga la scia senza appesantire.",
+ d:["1%","5–20%","30%"],dnote:"",p:5,di:6,pe:8,v:3,
+ compat:"Habanolide + Galaxolide + Ethylene Brassylate = base musk completa; ottimo con aldeidi, rosa, Iso E.",
+ caut:"Da solo può risultare 'freddo/piatto': bilanciare con un musk più caldo.",
+ psy:"Pulizia moderna, freschezza setosa, eleganza.",
+ ex:"Musk contemporanei, molti 'skin scent' di nicchia.",
+ tech:"Macrociclico più 'bio-friendly' dei policiclici. Ottima stabilità."},
+
+{n:"Ethylene Brassylate",chem:"etilene brassilato (musk macrociclico)",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Muschiata"],fn:["fissativo","volume","booster"],boost:true,
+ use:"Muschio economico da <b>fondo e fissaggio</b>: riempie la base con un muschio caldo-dolce leggero. Cavallo di battaglia del volume.",
+ desc:"Muschio morbido, leggermente dolce-ceroso, un po' 'polveroso pulito'. Discreto, riempitivo, poco caratterizzante: lavora dietro le quinte.",
+ d:["2%","8–20%","30%"],dnote:"",p:4,di:4,pe:7,v:3,
+ compat:"Qualunque base; ottimo diluente-fissativo per gli altri musk e per l'ambra.",
+ caut:"Basso impatto: non aspettarti carattere, serve a fare 'corpo'.",
+ psy:"Comfort discreto, morbidezza, pulizia.",
+ ex:"Ubiquo nelle basi muschiate.",
+ tech:"Macrociclico, ottimo profilo di sicurezza; molto stabile."},
+
+{n:"Norlimbanol",chem:"(Norlimbanol® / Timberol-type) dry amber woody",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Legnosa","Ambrata"],fn:["fissativo","booster","volume","skin"],boost:true,
+ use:"Legno-ambra <b>secchissimo e potente</b>: dà drydown 'legno che gratta', cuoio asciutto e tenacia. Booster di durezza e persistenza.",
+ desc:"Legno molto asciutto, ambra dura, faccetta cuoiata-animalica e quasi 'cedro bruciato'. Austero, virile, tenace. Crea l'ossatura dei woody-amber maschili.",
+ d:["0,1%","0,5–2%","4%"],dnote:"molto potente: dosi minime",p:9,di:6,pe:9,v:3,
+ compat:"Iso E Super, Ambroxan, cisto, vetiver, oud — struttura dei fondi maschili.",
+ caut:"Sopra soglia diventa aspro-graffiante e 'chimico-secco'; copre le note calde.",
+ psy:"Forza, austerità, mascolinità, pelle asciutta.",
+ ex:"Woody-amber e cuoio moderni, molti maschili di nicchia.",
+ tech:"Fissativo potente. Molto stabile."},
+
+{n:"Javanol",chem:"sandalore-type · Javanol® (sandalwood aroma chemical)",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",altTier:"cuore-fondo",fam:["Legnosa","Muschiata"],fn:["radiance","cremoso","booster","volume"],boost:true,
+ use:"Sandalo di sintesi <b>cremoso e diffusivo</b>: dà radiance lattea-rosata e volume 'sandalo' senza legno naturale. Potentissimo.",
+ desc:"Sandalo cremoso, latteo, con sfumatura rosata-muschiata e alone 'skin'. Setoso, caldo, molto diffusivo; l'effetto sandalo più radiante disponibile.",
+ d:["0,2%","1–4%","8%"],dnote:"iper-potente e tenace",p:9,di:8,pe:9,v:3,
+ compat:"Rosa, Iso E, muschi, Ambroxan, sandalo naturale (lo amplifica), cashmeran.",
+ caut:"Costoso e fortissimo: overdose 'satura' di sandalo cremoso e appiattisce.",
+ psy:"Morbidezza sensuale, lusso cremoso, comfort caldo.",
+ ex:"Santal-centrici moderni di nicchia; boost di sandalo in mille formule.",
+ tech:"Altissima tenacia e substantivity sulla pelle. Stabile."},
+
+{n:"Polysantol",chem:"(Polysantol® / β-santalol sintetico)",cat:"Sintetico",orig:"Sintetica",site:"AO",tier:"fondo",fam:["Legnosa"],fn:["cremoso","radiance","booster","fissativo"],boost:true,
+ use:"Sandalo sintetico <b>caldo-cremoso</b>, più 'grasso' e ambrato di Javanol: dà corpo e fissaggio lattiginoso.",
+ desc:"Sandalo cremoso-ambrato, latteo e leggermente urinoso-animalico (tipico del santalolo), caldo e rotondo. Riempie il fondo di morbidezza legnosa.",
+ d:["0,2%","1–4%","8%"],dnote:"",p:8,di:6,pe:9,v:3,
+ compat:"Rosa, ambra, muschi, vaniglia, sandalo naturale.",
+ caut:"Alte dosi virano al 'grasso-animalico'; dosare con Javanol per bilanciare freddo/caldo.",
+ psy:"Calore cremoso, sensualità morbida.",
+ ex:"Santal orientali e woody-lattei.",
+ tech:"Buon fissativo. Stabile."},
+
+{n:"Vertofix",chem:"acetil cedrene · Vertofix Coeur®",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Legnosa","Ambrata"],fn:["fissativo","volume","booster","smoothing"],boost:true,
+ use:"Legno di cedro-vetiver da <b>fissaggio e corpo</b>: base woody economica che ancora agrumi, chypre e fougère.",
+ desc:"Cedro asciutto-ambrato con sfumatura vetiver e 'inchiostro' legnoso, tenace e morbido. Poco brillante ma grande riempitivo di fondo.",
+ d:["1%","5–15%","25%"],dnote:"",p:6,di:4,pe:8,v:3,
+ compat:"Vetiver, patchouli, Iso E, muschi, oakmoss substitute — spina dorsale chypre.",
+ caut:"Da solo un po' 'spento/inchiostro'; serve luce (agrumi, Hedione) sopra.",
+ psy:"Solidità, sobrietà, legno pulito.",
+ ex:"Chypre e fougère classici e moderni.",
+ tech:"Fissativo woody storico. Molto stabile."},
+
+{n:"Ambrettolide",chem:"muschio macrociclico (da olibano/ambretta sintesi)",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Muschiata"],fn:["fissativo","radiance","booster","skin"],boost:true,
+ use:"Muschio macrociclico <b>elegante e 'nudo'</b>: effetto pelle pulita, dà scia raffinata e fissaggio senza dolcezza.",
+ desc:"Muschio caldo-morbido, leggermente fruttato-pero e 'nudo', molto naturale e vicino all'ambretta vegetale. Setoso, radiante, di gran classe.",
+ d:["1%","4–12%","20%"],dnote:"",p:5,di:6,pe:8,v:3,
+ compat:"Iso E, rosa, agrumi, altri musk, ambra — nobilita qualunque base.",
+ caut:"Costoso; effetto sottile, non è un 'muro' di muschio.",
+ psy:"Eleganza nuda, pelle pulita, raffinatezza.",
+ ex:"Musk di alta profumeria, 'skin scent' costosi.",
+ tech:"Ottimo profilo di sicurezza; stabile."},
+
+{n:"Muscenone",chem:"nitro-free nitromusk-free · Muscenone® (muscone-type)",cat:"Sintetico",orig:"Sintetica",site:"AO",tier:"fondo",fam:["Muschiata"],fn:["radiance","fissativo","booster"],boost:true,
+ use:"Muschio 'nobile' molto <b>diffusivo e radiante</b>, vicino al muscone naturale: dà sensualità e lift alla base musk.",
+ desc:"Muschio caldo-animalico morbido, cipriato ed elegante, con proiezione notevole. Più 'vivo' e sensuale dei musk lineari.",
+ d:["0,5%","2–8%","15%"],dnote:"",p:6,di:7,pe:8,v:3,
+ compat:"Galaxolide/Habanolide (li 'accende'), rosa, ambra, sandalo.",
+ caut:"Costoso; overdose vira all'animalico caldo.",
+ psy:"Sensualità, pelle calda, eleganza.",
+ ex:"Musk di lusso, orientali cipriati.",
+ tech:"Stabile; grande resa in diffusione."},
+
+{n:"Vanillina",chem:"4-idrossi-3-metossibenzaldeide · vanillin",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Gourmand","Ambrata","Balsamica"],fn:["dolce","fissativo","volume","booster","smoothing"],boost:true,
+ use:"Dolcezza <b>balsamica</b> che arrotonda e fissa: lega gli orientali, addolcisce gli spigoli, dà comfort caldo. Booster di 'coccola'.",
+ desc:"Vaniglia calda, balsamico-dolce, un po' 'cialda' e legnosa. Copre asprezze, unisce ambra/spezie/legni in un abbraccio caldo.",
+ d:["0,3%","1–5%","10%"],dnote:"ingiallisce le basi",p:6,di:4,pe:8,v:3,
+ compat:"Ambra, benzoino, tonka/cumarina, sandalo, spezie, frutti.",
+ caut:"Ingiallisce e può 'sporcare' i bianchi/agrumati; alte dosi stucchevoli e coprenti.",
+ psy:"Comfort, dolcezza, calore, gourmand rassicurante.",
+ ex:"Shalimar, Angel, orientali e gourmand innumerevoli.",
+ tech:"Ossida/ingiallisce alla luce; stabilizzare. Etilvanillina è ~3× più potente e più 'cioccolato'."},
+
+{n:"Coumarina",chem:"cumarina · 2H-cromen-2-one",cat:"Sintetico",orig:"Sintetica (isolabile da fava tonka)",site:"AO+FW",tier:"fondo",altTier:"cuore-fondo",fam:["Gourmand","Aromatica","Balsamica"],fn:["dolce","fissativo","booster","smoothing"],boost:true,
+ use:"Cuore della fougère: dà <b>dolcezza fieno-mandorlata</b> che leviga e fissa. Booster di rotondità 'barbershop'.",
+ desc:"Fieno tagliato dolce, mandorla-tabacco, caldo e cipriato. Ammorbidisce lavanda e legni, crea il classico effetto fougère/tonka.",
+ d:["0,3%","1–5%","10%"],dnote:"limiti IFRA da rispettare",p:6,di:4,pe:7,v:3,
+ compat:"Lavanda, fava tonka, muschi, ambra, tabacco, vaniglia.",
+ caut:"Allergene con limiti IFRA; alte dosi 'polverose-soffocanti'.",
+ psy:"Calore avvolgente, nostalgia, comfort maschile.",
+ ex:"Jicky, Fougère Royale, tutte le fougère.",
+ tech:"Solido cristallino; stabile. Allergene dichiarabile."},
+
+{n:"Dihydromyrcenol",chem:"diidromircenolo",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"testa",altTier:"testa-cuore",fam:["Agrumata","Legnosa","Fresca"],fn:["lift","diffusione","fresco","booster"],boost:true,
+ use:"Booster di <b>freschezza 'fresh' metallica</b>: dà lift agrumato-lavandato pulito e proiezione ariosa alle aperture.",
+ desc:"Fresco lime-lavanda, un po' saponoso-metallico, trasparente e volatile. Effetto 'clean/fresh sport'. Amplifica la brillantezza della testa.",
+ d:["1%","5–15%","30%"],dnote:"",p:5,di:7,pe:3,v:8,
+ compat:"Agrumi, lavanda, Hedione, muschi bianchi, Iso E.",
+ caut:"Alte dosi 'saponoso-anni90'; volatile, poca durata.",
+ psy:"Pulizia fresca, energia, sport, modernità.",
+ ex:"Cool Water, Drakkar Noir, aromatic-fresh anni '90.",
+ tech:"Molto stabile, ottimo in funzionale/sapone."},
+
+{n:"Helional",chem:"aldeide marina-verde · Helional®",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"testa",altTier:"testa-cuore",fam:["Marina","Verde","Floreale"],fn:["lift","diffusione","fresco","booster"],boost:true,
+ use:"Dà <b>lift acquoso-arioso</b> e trasparenza marina: apre e 'ossigena' la composizione. Booster di freschezza ozonica.",
+ desc:"Acquoso-verde con petalo e melone freddo, aldeidico morbido, arioso. Sensazione di 'aria e acqua', bassa temperatura, luminoso.",
+ d:["0,5%","2–8%","15%"],dnote:"",p:6,di:7,pe:4,v:6,
+ compat:"Calone, Floralozone, Hedione, agrumi, muschi, ciclamino.",
+ caut:"Alte dosi 'detersivo acquoso'; svanisce presto.",
+ psy:"Freschezza, pulizia, aria aperta, leggerezza.",
+ ex:"Acquatici e marini moderni, molti 'clean'.",
+ tech:"Stabile; potente in diffusione a basse dosi."},
+
+{n:"Calone 1951",chem:"metilbenzodioxepinone · Calone®",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"cuore",altTier:"testa-cuore",fam:["Marina"],fn:["diffusione","fresco","booster"],boost:true,
+ use:"La molecola 'marina': dà <b>effetto acqua di mare/anguria-ozono</b>. Booster di nota acquatica riconoscibilissima.",
+ desc:"Marino-ozonico, anguria e cetriolo freddi, salino. Fortissimo carattere: definisce da solo l'accordo 'oceano'. Freddo, umido, trasparente.",
+ d:["0,1%","0,5–3%","6%"],dnote:"potente: dosi basse",p:8,di:7,pe:5,v:5,
+ compat:"Helional, Floralozone, agrumi, Hedione, muschi, melone.",
+ caut:"Molto caratterizzante e 'datato anni 90' se sovradosato; copre facilmente.",
+ psy:"Mare, freschezza, nostalgia acquatica, pulizia.",
+ ex:"L'Eau d'Issey, Acqua di Giò, Escape, Cool Water.",
+ tech:"Polvere cristallina; stabile. Su AO anche in 10% TRI."},
+
+{n:"Damascenone",chem:"β-damascenone · rose ketone",cat:"Sintetico",orig:"Sintetica (natural-identical)",site:"AO+FW",tier:"cuore",altTier:"testa-cuore",fam:["Fruttata","Floreale"],fn:["diffusione","lift","booster","radiance"],boost:true,
+ use:"Booster di <b>rosa fruttata radiante</b>: tracce accendono e 'illuminano' rosa, frutti e chypre con enorme diffusione.",
+ desc:"Rosa-mela cotta, prugna e miele, fruttato caldo e brillante. Potenza fenomenale: quantità omeopatiche danno lift e succosità.",
+ d:["0,01%","0,05–0,3%","0,7%"],dnote:"dosare in ppm",p:10,di:9,pe:5,v:6,
+ compat:"Rosa, frutti, ambra, patchouli, prugna, chypre.",
+ caut:"Sovradosaggio facilissimo → 'marmellata' invadente. Usare diluita (1% o 10%).",
+ psy:"Sensualità fruttata, calore, opulenza.",
+ ex:"Rose e fruttati moderni, Nahéma, molti chypre-fruttati.",
+ tech:"Iper-potente; leggermente instabile in mezzi acidi. Su AO disponibile 1% TRI."},
+
+{n:"Aldeide C12 MNA",chem:"2-metilundecanale · aldeide C12 MNA",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"testa",fam:["Aldeidica","Fresca"],fn:["lift","diffusione","radiance","booster"],boost:true,
+ use:"Booster aldeidico di <b>brillantezza e lift</b>: dà scintillio 'champagne', proiezione e quel bagliore metallico-saponoso in testa.",
+ desc:"Aldeidico brillante, cerato-agrumato con sfumatura metallica-saponosa, freddo e frizzante. Espande e illumina l'apertura.",
+ d:["0,05%","0,2–1%","2%"],dnote:"potente: dosi basse, diluire",p:8,di:8,pe:4,v:7,
+ compat:"Rosa, ylang, neroli, muschi, Iso E — 'accende' i floreali.",
+ caut:"Overdose 'cera di candela/saponetta' pungente; volatile.",
+ psy:"Eleganza scintillante, retrò-chic, luminosità.",
+ ex:"Chanel N°5, Rive Gauche, aldeidici classici.",
+ tech:"Diluire sempre (1–10%); ossidabile, conservare al riparo."},
+
+{n:"Kephalis",chem:"tetrametil acetil-ottaidronaftalene · Kephalis®",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Ambrata","Legnosa","Speziata"],fn:["radiance","booster","volume","fissativo"],boost:true,
+ use:"Booster ambrato-tabacco che dà <b>calore radiante e diffusione</b> ai fondi, con sfumatura di tabacco/tè secco.",
+ desc:"Ambrato-legnoso caldo con tabacco secco, tè e fieno; asciutto, radiante, elegante. Espande i fondi orientali senza appesantirli.",
+ d:["0,5%","2–8%","15%"],dnote:"",p:7,di:7,pe:8,v:3,
+ compat:"Iso E, ambra, tabacco, spezie, vetiver, Ambroxan.",
+ caut:"Alte dosi 'secche-legnose' insistenti.",
+ psy:"Eleganza calda, mistero asciutto, raffinatezza.",
+ ex:"Ambrati-tabacco e legni moderni.",
+ tech:"Buon fissativo diffusivo. Stabile."},
+
+{n:"Sandalore",chem:"sandalwood aroma chemical · Sandalore®",cat:"Sintetico",orig:"Sintetica",site:"AO+FW",tier:"fondo",fam:["Legnosa","Muschiata"],fn:["cremoso","volume","booster","fissativo"],boost:true,
+ use:"Sandalo sintetico <b>economico e morbido</b>: dà corpo cremoso-legnoso e volume al fondo, buon estensore di Javanol/Polysantol.",
+ desc:"Sandalo cremoso-secco, leggermente floreale-muschiato, morbido e pulito. Meno potente di Javanol ma ottimo riempitivo 'sandalo'.",
+ d:["0,5%","3–10%","20%"],dnote:"",p:5,di:5,pe:7,v:3,
+ compat:"Javanol/Polysantol (li estende), rosa, muschi, ambra, cedro.",
+ caut:"Da solo un po' 'piatto-sintetico'; meglio in blend di sandali.",
+ psy:"Morbidezza, comfort legnoso, pulizia calda.",
+ ex:"Santal di largo consumo, functional.",
+ tech:"Stabile, buona resa/prezzo."}
+];
+
+// ===== MOTORE =====
+const FN_LABELS = {booster:"Booster",fissativo:"Fissativo",radiance:"Radiance",diffusione:"Diffusione",lift:"Lift",volume:"Volume",trasparenza:"Trasparenza",cremoso:"Cremoso",dolce:"Dolce",fresco:"Fresco",skin:"Effetto pelle",smoothing:"Smoothing",blooming:"Blooming"};
+const state={q:"",tier:new Set(),fn:new Set(),boost:false,sort:"az"};
+const $=s=>document.querySelector(s), cardsEl=$("#cards"), emptyEl=$("#empty");
+
+// build function chips from data
+const allFn=[...new Set(M.flatMap(m=>m.fn))].sort((a,b)=>(FN_LABELS[a]||a).localeCompare(FN_LABELS[b]||b));
+$("#fnChips").innerHTML=allFn.map(f=>`<button class="chip" data-f="fn" data-v="${f}" aria-pressed="false">${FN_LABELS[f]||f}</button>`).join("");
+
+function tierClass(t){return t==="testa"?"t-testa":t==="cuore"?"t-cuore":"t-fondo"}
+function tierLabel(t){return t.charAt(0).toUpperCase()+t.slice(1)}
+function bar(v){return `<span class="track"><span class="fill" style="width:${v*10}%"></span></span>`}
+
+function render(){
+  let list=M.filter(m=>{
+    if(state.boost && !m.boost) return false;
+    if(state.tier.size && !state.tier.has(m.tier)) return false;
+    if(state.fn.size && ![...state.fn].every(f=>m.fn.includes(f))) return false;
+    if(state.q){
+      const hay=(m.n+" "+m.chem+" "+m.fam.join(" ")+" "+m.fn.map(f=>FN_LABELS[f]).join(" ")+" "+m.desc+" "+m.use).toLowerCase();
+      if(!hay.includes(state.q.toLowerCase())) return false;
+    }
+    return true;
+  });
+  const s=state.sort;
+  list.sort((a,b)=> s==="az"? a.n.localeCompare(b.n) : (b[s==="pot"?"p":s==="pers"?"pe":"di"]-a[s==="pot"?"p":s==="pers"?"pe":"di"]) || a.n.localeCompare(b.n));
+
+  cardsEl.innerHTML=list.map(m=>`
+   <article class="card${m.boost?' boost':''}">
+    <div class="c-head">
+      <div><h3>${m.n}</h3><span class="chem">${m.chem}</span></div>
+      <span class="tier-tag ${tierClass(m.tier)}">${tierLabel(m.tier)}</span>
+    </div>
+    <div class="metaline">
+      <span class="tag site">${m.site}</span>
+      <span class="tag">${m.cat}</span>
+      ${m.fam.map(f=>`<span class="tag">${f}</span>`).join("")}
+    </div>
+    <div class="metaline">${m.fn.map(f=>`<span class="tag fn">${FN_LABELS[f]||f}</span>`).join("")}</div>
+    <div class="use">${m.use}</div>
+    <div class="dose">
+      <div><div class="dk">Min</div><div class="dv">${m.d[0]}</div></div>
+      <div class="mid"><div class="dk">Tipico</div><div class="dv">${m.d[1]}</div></div>
+      <div><div class="dk">Max</div><div class="dv">${m.d[2]}</div></div>
+    </div>
+    ${m.dnote?`<div class="dnote">↳ ${m.dnote}</div>`:""}
+    <div class="intens">
+      <span class="m"><span class="mk">Pot</span>${bar(m.p)}</span>
+      <span class="m"><span class="mk">Diff</span>${bar(m.di)}</span>
+      <span class="m"><span class="mk">Pers</span>${bar(m.pe)}</span>
+      <span class="m"><span class="mk">Volat</span>${bar(m.v)}</span>
+    </div>
+    <div class="desc">${m.desc}</div>
+    <details><summary>Compatibilità, cautele, esempi, note tecniche</summary>
+      <div class="body">
+        <div><b>Ottima con</b>${m.compat}</div>
+        <div><b>Da usare con cautela</b>${m.caut}</div>
+        <div><b>Effetto psicologico</b>${m.psy}</div>
+        <div><b>Esempi famosi</b>${m.ex}</div>
+        <div><b>Note tecniche</b>${m.tech}</div>
+        ${m.altTier?`<div><b>Piramide</b>Collocazione principale: ${tierLabel(m.tier)}; agisce anche come ${m.altTier} (vedi descrizione).</div>`:""}
+      </div>
+    </details>
+   </article>`).join("");
+
+  emptyEl.hidden=list.length>0;
+  $("#count").textContent=`${list.length} / ${M.length}`;
+  $("#s-shown").textContent=list.length;
+}
+
+// wire up
+$("#q").addEventListener("input",e=>{state.q=e.target.value;render()});
+$("#sort").addEventListener("change",e=>{state.sort=e.target.value;render()});
+$("#boostOnly").addEventListener("click",e=>{const b=e.currentTarget;const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);state.boost=on;render()});
+document.querySelectorAll('[data-f="tier"]').forEach(b=>b.addEventListener("click",()=>{const v=b.dataset.v;const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);on?state.tier.add(v):state.tier.delete(v);render()}));
+document.querySelectorAll('#fnChips [data-f="fn"]').forEach(b=>b.addEventListener("click",()=>{const v=b.dataset.v;const on=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",on);on?state.fn.add(v):state.fn.delete(v);render()}));
+
+// init stats
+$("#s-tot").textContent=M.length;
+$("#s-boost").textContent=M.filter(m=>m.boost).length;
+render();
+</script>
